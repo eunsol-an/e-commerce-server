@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import kr.hhplus.be.server.common.dto.CouponDto;
+import kr.hhplus.be.server.docs.CouponApiDocs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/coupons")
-public class CouponController {
+public class CouponController implements CouponApiDocs {
 
     @PostMapping("/issue")
     public ResponseEntity<CouponDto.CouponIssueResponse> issueCoupon(

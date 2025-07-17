@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.domain.point;
 
 import kr.hhplus.be.server.common.dto.PointDto;
+import kr.hhplus.be.server.docs.PointApiDocs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/points")
-public class PointController {
+public class PointController implements PointApiDocs {
 
     @PostMapping("/charge")
     public ResponseEntity<PointDto.BalanceResponse> chargePoint(

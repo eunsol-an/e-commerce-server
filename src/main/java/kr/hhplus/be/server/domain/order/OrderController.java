@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.common.dto.OrderDto;
+import kr.hhplus.be.server.docs.OrderApiDocs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
-public class OrderController {
+public class OrderController implements OrderApiDocs {
 
     @PostMapping
     public ResponseEntity<OrderDto.OrderResponse> placeOrder(
