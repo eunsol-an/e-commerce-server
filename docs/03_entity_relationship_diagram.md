@@ -67,7 +67,7 @@ erDiagram
     COUPON {
         BIGINT id PK
         BIGINT user_id FK
-        BIGINT coupon_id FK
+        BIGINT coupon_policy_id FK
         varchar status "ISSUED | USED | EXPIRED"
         DATETIME issued_at
     }
@@ -129,24 +129,24 @@ CREATE TABLE coupon_policy (
 CREATE TABLE coupon (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    coupon_id BIGINT NOT NULL,
-    status ENUM('UNUSED', 'USED', 'EXPIRED') NOT NULL DEFAULT 'UNUSED',
+    coupon_policy_id BIGINT NOT NULL,
+    status ENUM('ISSUED', 'USED', 'EXPIRED') NOT NULL DEFAULT 'ISSUED',
     issued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE INDEX uniq_user_coupon (user_id, coupon_id), -- 한 유저당 쿠폰 1회만 발급
-    INDEX idx_user_coupon_user_id (user_id)
+    UNIQUE INDEX uniq_user_coupon (user_id, coupon_policy_id), -- 한 유저당 쿠폰 1회만 발급
+    INDEX idx_coupon_user_id (user_id)
 );
 
 -- 주문 테이블
 CREATE TABLE `order` (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    user_coupon_id BIGINT NULL,
+    coupon_id BIGINT NULL,
     total_item_price INT NOT NULL,
     discount_amount INT NOT NULL DEFAULT 0,
     paid_amount INT NOT NULL,
     ordered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_order_user_id (user_id),
-    INDEX idx_order_user_coupon_id (user_coupon_id),
+    INDEX idx_order_coupon_id (coupon_id),
     INDEX idx_order_ordered_at (ordered_at) -- 상위 상품 조회 대비
 );
 
