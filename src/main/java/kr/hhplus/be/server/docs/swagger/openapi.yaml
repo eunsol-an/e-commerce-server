@@ -1,0 +1,701 @@
+openapi: 3.0.1
+info:
+  title: E-Commerce Service
+  description: 🛒 e-커머스 서비스
+  contact:
+    name: Github Repository
+    url: https://github.com/eunsol-an/e-commerce-server
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: 포인트
+  description: 포인트 관련 API
+- name: 상품
+  description: 상품 관련 API
+- name: 주문
+  description: 주문 관련 API
+- name: 쿠폰
+  description: 쿠폰 관련 API
+paths:
+  /points/charge:
+    post:
+      tags:
+      - 포인트
+      summary: 포인트 충전
+      description: 사용자의 포인트를 요청한 금액만큼 충전합니다.
+      operationId: chargePoint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PointChargeRequest"
+        required: true
+      responses:
+        "200":
+          description: 충전 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceResponse"
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 포인트 충전 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+        "400":
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                잘못된 충전 금액:
+                  summary: 금액이 0 이하
+                  description: 잘못된 충전 금액
+                  value:
+                    code: 400
+                    message: INVALID REQUEST
+        "404":
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                없는 유저:
+                  summary: 유저를 찾을 수 없음
+                  description: 없는 유저
+                  value:
+                    code: 404
+                    message: USER NOT FOUND
+  /orders:
+    post:
+      tags:
+      - 주문
+      summary: 주문 생성
+      description: 사용자의 주문을 생성합니다.
+      operationId: placeOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        "400":
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                잘못된 상품 요청:
+                  summary: 존재하지 않는 상품 ID 포함
+                  description: 잘못된 상품 요청
+                  value:
+                    code: 400
+                    message: INVALID PRODUCT ID
+                쿠폰 없음:
+                  summary: "해당 쿠폰을 보유하고 있지 않거나, 이미 사용함"
+                  description: 쿠폰 없음
+                  value:
+                    code: 400
+                    message: INVALID COUPON ID
+        "200":
+          description: 주문 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        "409":
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                재고 부족:
+                  summary: 상품의 재고가 부족함
+                  description: 재고 부족
+                  value:
+                    code: 409
+                    message: OUT OF STOCK
+        "404":
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                유저 없음:
+                  summary: 주문하려는 유저가 존재하지 않음
+                  description: 유저 없음
+                  value:
+                    code: 404
+                    message: USER NOT FOUND
+        "402":
+          description: 결제 필요
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                잔액 부족:
+                  summary: 잔액이 부족함
+                  description: 잔액 부족
+                  value:
+                    code: 402
+                    message: PAYMENT REQUIRED
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 주문 처리 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+  /coupons/issue:
+    post:
+      tags:
+      - 쿠폰
+      summary: 쿠폰 발급
+      description: 사용자에게 쿠폰을 발급합니다.
+      operationId: issueCoupon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CouponIssueRequest"
+        required: true
+      responses:
+        "404":
+          description: 사용자 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                유저 없음:
+                  summary: 해당 유저가 존재하지 않음
+                  description: 유저 없음
+                  value:
+                    code: 404
+                    message: USER NOT FOUND
+        "409":
+          description: 요청 충돌
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                쿠폰 소진:
+                  summary: 잔여 쿠폰 없음
+                  description: 쿠폰 소진
+                  value:
+                    code: 409
+                    message: CONFLICT
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 쿠폰 발급 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+        "200":
+          description: 쿠폰 발급 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponIssueResponse"
+        "400":
+          description: 잘못된 요청
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                잘못된 요청:
+                  summary: 이미 발급한 유저
+                  description: 잘못된 요청
+                  value:
+                    code: 400
+                    message: INVALID REQUEST
+  /products:
+    get:
+      tags:
+      - 상품
+      summary: 전체 상품 조회
+      description: 모든 상품 목록을 조회합니다.
+      operationId: getAllProducts
+      responses:
+        "200":
+          description: 상품 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 상품 목록 조회 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+  /products/popular:
+    get:
+      tags:
+      - 상품
+      summary: 인기 상품 조회
+      description: 인기 상품 목록을 조회합니다.
+      operationId: getPopularProducts
+      responses:
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 인기 상품 조회 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+        "200":
+          description: 인기 상품 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PopularProductResponse"
+  /points:
+    get:
+      tags:
+      - 포인트
+      summary: 포인트 잔액 조회
+      description: 사용자의 현재 포인트 잔액을 조회합니다.
+      operationId: getBalance
+      parameters:
+      - name: userId
+        in: query
+        description: 조회할 사용자 ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: 잔액 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceResponse"
+        "404":
+          description: 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                없는 유저:
+                  summary: 유저를 찾을 수 없음
+                  description: 없는 유저
+                  value:
+                    code: 404
+                    message: USER NOT FOUND
+  /coupons:
+    get:
+      tags:
+      - 쿠폰
+      summary: 쿠폰 목록 조회
+      description: 사용자의 쿠폰 목록을 조회합니다.
+      operationId: getCoupons
+      parameters:
+      - name: userId
+        in: query
+        description: 조회할 사용자 ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: 쿠폰 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponListResponse"
+        "404":
+          description: 사용자 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                유저 없음:
+                  summary: 해당 유저가 존재하지 않음
+                  description: 유저 없음
+                  value:
+                    code: 404
+                    message: USER NOT FOUND
+        "500":
+          description: 서버 에러
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiException"
+              examples:
+                서버 에러:
+                  summary: 쿠폰 조회 중 서버 에러 발생
+                  description: 서버 에러
+                  value:
+                    code: 500
+                    message: INTERNAL SERVER ERROR
+components:
+  schemas:
+    PointChargeRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: 유저 ID
+          format: int64
+          example: 1
+        amount:
+          type: integer
+          description: 충전 금액
+          format: int64
+          example: 1000
+      description: 충전 요청 정보
+    BalanceResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: 유저 ID
+          format: int64
+          example: 1
+        balance:
+          type: integer
+          description: 잔액
+          format: int64
+          example: 1000
+      description: 잔액 Response
+    ApiException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName:
+                    type: string
+                  moduleName:
+                    type: string
+                  moduleVersion:
+                    type: string
+                  methodName:
+                    type: string
+                  fileName:
+                    type: string
+                  lineNumber:
+                    type: integer
+                    format: int32
+                  nativeMethod:
+                    type: boolean
+                  className:
+                    type: string
+            message:
+              type: string
+            localizedMessage:
+              type: string
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              nativeMethod:
+                type: boolean
+              className:
+                type: string
+        errorCode:
+          type: string
+          enum:
+          - INVALID_INPUT_VALUE
+          - ENTITY_NOT_FOUND
+          - DUPLICATE_RESOURCE
+          - UNAUTHORIZED
+          - FORBIDDEN
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    nativeMethod:
+                      type: boolean
+                    className:
+                      type: string
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    OrderItemRequest:
+      type: object
+      properties:
+        productId:
+          type: integer
+          description: 상품 ID
+          format: int64
+          example: 1
+        quantity:
+          type: integer
+          description: 주문 수량
+          format: int32
+          example: 2
+      description: 주문 아이템 Request
+      example:
+        code: 500
+        message: INTERNAL SERVER ERROR
+    OrderRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: 유저 ID
+          format: int64
+          example: 1
+        items:
+          type: array
+          description: 주문 아이템 목록
+          example:
+            code: 500
+            message: INTERNAL SERVER ERROR
+          items:
+            $ref: "#/components/schemas/OrderItemRequest"
+        couponId:
+          type: integer
+          description: 쿠폰 ID
+          format: int64
+          example: 10
+      description: 주문 요청 Request
+    OrderItemResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          description: 상품 ID
+          format: int64
+          example: 1
+        name:
+          type: string
+          description: 상품명
+          example: 머쉬룸 스탠드
+        price:
+          type: integer
+          description: 상품 가격
+          format: int64
+          example: 32000
+        quantity:
+          type: integer
+          description: 재고 수량
+          format: int32
+          example: 100
+      description: 주문 아이템 Response
+      example: 1
+    OrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          description: 주문 ID
+          format: int64
+          example: 1
+        totalItemPrice:
+          type: integer
+          description: 총 상품 금액
+          format: int64
+          example: 47000
+        discountAmount:
+          type: integer
+          description: 할인 금액
+          format: int64
+          example: 1000
+        paidAmount:
+          type: integer
+          description: 총 결제 금액
+          format: int64
+          example: 46000
+        items:
+          type: array
+          description: 주문 아이템 목록
+          example: 1
+          items:
+            $ref: "#/components/schemas/OrderItemResponse"
+      description: 주문 요청 Response
+    CouponIssueRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: 유저 ID
+          format: int64
+          example: 1
+        couponId:
+          type: integer
+          description: 쿠폰 ID
+          format: int64
+          example: 10
+      description: 쿠폰 발급 요청 정보
+    CouponIssueResponse:
+      type: object
+      properties:
+        couponId:
+          type: integer
+          description: 쿠폰 ID
+          format: int64
+          example: 10
+        discountAmount:
+          type: integer
+          description: 할인 금액
+          format: int32
+          example: 1000
+        expiredAt:
+          type: string
+          description: 만료일
+          format: date-time
+      description: 쿠폰 발급 Response
+    ProductResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          description: 상품 ID
+          format: int64
+          example: 1
+        name:
+          type: string
+          description: 상품명
+          example: 머쉬룸 스탠드
+        price:
+          type: integer
+          description: 상품 가격
+          format: int64
+          example: 32000
+        stockQuantity:
+          type: integer
+          description: 재고량
+          format: int32
+          example: 100
+      description: 상품 조회 Response
+    PopularProductResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          description: 상품 ID
+          format: int64
+          example: 1
+        name:
+          type: string
+          description: 상품명
+          example: 머쉬룸 스탠드
+        totalSales:
+          type: integer
+          description: 총 판매 금액
+          format: int64
+          example: 3200000
+        quantitySold:
+          type: integer
+          description: 총 판매 수량
+          format: int32
+          example: 100
+      description: 상위 상품 조회 Response
+    CouponListResponse:
+      type: object
+      properties:
+        couponId:
+          type: integer
+          description: 쿠폰 ID
+          format: int64
+          example: 10
+        discountAmount:
+          type: integer
+          description: 할인 금액
+          format: int32
+          example: 1000
+        status:
+          type: string
+          description: 쿠폰 상태
+          example: ISSUED
+        expiredAt:
+          type: string
+          description: 만료일
+          format: date-time
+      description: 보유 쿠폰 조회 Response
