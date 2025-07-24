@@ -1,6 +1,5 @@
-package kr.hhplus.be.server.domain.coupon;
+package kr.hhplus.be.server.domain.coupon.presentation;
 
-import kr.hhplus.be.server.common.dto.CouponDto;
 import kr.hhplus.be.server.docs.CouponApiDocs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
