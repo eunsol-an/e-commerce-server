@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.common.dto.OrderDto;
+import kr.hhplus.be.server.domain.order.presentation.OrderDto;
 import kr.hhplus.be.server.exception.ApiException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,7 +80,7 @@ public interface OrderApiDocs {
                             }))
     })
     @PostMapping
-    ResponseEntity<OrderDto.OrderResponse> placeOrder(
+    ResponseEntity<Void> placeOrder(
             @RequestBody
             OrderDto.OrderRequest request
     );

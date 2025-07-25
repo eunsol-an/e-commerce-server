@@ -1,0 +1,31 @@
+package kr.hhplus.be.server.domain.order.application;
+
+import kr.hhplus.be.server.domain.order.presentation.OrderDto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class OrderCommand {
+    public record Create(
+            Long userId,
+            List<OrderCommand.Item> items,
+            Long couponPolicyId
+    ) {
+        public static Create of(Long userId, List<OrderDto.OrderItemRequest> items, Long couponPolicyId) {
+            List<OrderCommand.Item> itemsList = new ArrayList<>();
+            for (OrderDto.OrderItemRequest item : items) {
+                itemsList.add(OrderCommand.Item.of(item.productId(), item.quantity()));
+            }
+            return new Create(userId, itemsList, couponPolicyId);
+        }
+    }
+
+    public record Item(
+            Long productId,
+            int quantity
+    ) {
+        public static Item of(Long productId, int quantity) {
+            return new Item(productId, quantity);
+        }
+    }
+}
