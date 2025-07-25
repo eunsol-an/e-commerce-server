@@ -27,4 +27,9 @@ public class CouponRepositoryImpl implements CouponRepository {
         CouponJpaEntity couponJpaEntity = couponMapper.toEntity(coupon);
         return couponMapper.toDomain(couponJpaRepository.save(couponJpaEntity));
     }
+
+    @Override
+    public boolean existsByUserIdAndCouponPolicyId(Long userId, Long couponPolicyId) {
+        return couponJpaRepository.existsByUserIdAndCouponPolicyId(userId, couponPolicyId);
+    }
 }

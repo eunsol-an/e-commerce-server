@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.coupon.presentation;
 
 import kr.hhplus.be.server.docs.CouponApiDocs;
+import kr.hhplus.be.server.domain.coupon.application.CouponService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,13 +11,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/coupons")
+@RequiredArgsConstructor
 public class CouponController implements CouponApiDocs {
+    private final CouponService couponService;
 
     @PostMapping("/issue")
-    public ResponseEntity<CouponDto.CouponIssueResponse> issueCoupon(
+    public ResponseEntity<Void> issueCoupon(
             @RequestBody CouponDto.CouponIssueRequest request
     ) {
-        return ResponseEntity.ok(new CouponDto.CouponIssueResponse(1L, 1000, LocalDateTime.now()));
+        couponService.issue(request.userId(), request.couponId());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
