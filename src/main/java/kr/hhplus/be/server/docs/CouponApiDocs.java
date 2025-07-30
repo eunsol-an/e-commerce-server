@@ -66,7 +66,7 @@ public interface CouponApiDocs {
                             }))
     })
     @PostMapping("/issue")
-    ResponseEntity<CouponDto.CouponIssueResponse> issueCoupon(
+    ResponseEntity<Void> issueCoupon(
             @RequestBody
             @Parameter(description = "쿠폰 발급 요청 정보", required = true)
             CouponDto.CouponIssueRequest request

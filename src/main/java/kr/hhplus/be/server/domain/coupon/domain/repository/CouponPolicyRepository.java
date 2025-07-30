@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface CouponPolicyRepository {
     Optional<CouponPolicy> findById(Long userId);
+    CouponPolicy save(CouponPolicy couponPolicy);
 }
