@@ -45,4 +45,28 @@ class CouponTest {
 
         assertEquals(CouponStatus.USED, coupon.getStatus());
     }
+
+    @Test
+    @DisplayName("발급 수량이 남아 있으면 발급 가능하다")
+    void 쿠폰_수량_충분() {
+        CouponPolicy policy = CouponPolicy.of(1L, 100, 100, 99, 30);
+        assertTrue(policy.isIssuable());
+    }
+
+    @Test
+    @DisplayName("발급 수량이 초과되면 발급 불가하다")
+    void 쿠폰_수량_초과() {
+        CouponPolicy policy = CouponPolicy.of(1L, 100, 100, 100, 30);
+        assertFalse(policy.isIssuable());
+    }
+
+    @Test
+    @DisplayName("쿠폰 발급 수량을 1 증가시킨다")
+    void 쿠폰_수량_증가() {
+        CouponPolicy policy = CouponPolicy.of(1L, 100, 1, 0, 30);
+
+        policy.increaseIssuedCount();
+
+        assertEquals(1, policy.getIssuedCount());
+    }
 }
