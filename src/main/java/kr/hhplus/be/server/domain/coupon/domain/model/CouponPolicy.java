@@ -29,4 +29,12 @@ public class CouponPolicy {
                 .validDays(validDays)
                 .build();
     }
+
+    public boolean isIssuable() {
+        return issuedCount < totalQuantity;
+    }
+
+    public void increaseIssuedCount() {
+        this.issuedCount += 1;
+    }
 }

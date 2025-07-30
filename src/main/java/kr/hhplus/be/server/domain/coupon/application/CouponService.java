@@ -32,9 +32,9 @@ public class CouponService {
         return coupon;
     }
 
-    public CouponPolicy getCouponPolicy(Long couponId) {
-        return couponPolicyRepository.findById(couponId)
-                .orElseThrow(() -> new ApiException(COUPON_NOT_FOUNT));
+    public CouponPolicy getCouponPolicy(Long couponPolicyId) {
+        return couponPolicyRepository.findById(couponPolicyId)
+                .orElseThrow(() -> new ApiException(COUPON_POLICY_NOT_FOUND));
     }
 
     public void use(Long couponPolicyId, Long userId) {
@@ -54,18 +54,27 @@ public class CouponService {
         synchronized (lock) {
 
             // 3. 쿠폰 정책 조회 (없으면 예외 발생)
-            CouponPolicy policy = couponPolicyRepository.findById(couponPolicyId)
-                    .orElseThrow(() -> new ApiException(COUPON_NOT_FOUNT));
+            CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
+                    .orElseThrow(() -> new ApiException(COUPON_POLICY_NOT_FOUND));
 
-            // 4. 이미 해당 유저가 이 쿠폰 정책으로 쿠폰을 발급받았는지 확인 (중복 발급 방지)
-            boolean alreadyUsed = couponRepository.existsByUserIdAndCouponPolicyId(userId, policy.getId());
+            // 4. 쿠폰 발급 수량 초과 여부 확인
+            if (!couponPolicy.isIssuable()) {
+                throw new ApiException(COUPON_SOLD_OUT);
+            }
+
+            // 5. 이미 해당 유저가 이 쿠폰 정책으로 쿠폰을 발급받았는지 확인 (중복 발급 방지)
+            boolean alreadyUsed = couponRepository.existsByUserIdAndCouponPolicyId(userId, couponPolicy.getId());
             if (alreadyUsed) {
                 throw new ApiException(ALREADY_ISSUED_COUPON);
             }
 
-            // 5. 쿠폰 생성 및 저장
+            // 6. 쿠폰 생성 및 저장
             Coupon coupon = Coupon.of(userId, couponPolicyId, CouponStatus.ISSUED);
             couponRepository.save(coupon);
+
+            // 7. 쿠폰 발급 수량 1 증가
+            couponPolicy.increaseIssuedCount();
+            couponPolicyRepository.save(couponPolicy);
         }
     }
 }
