@@ -33,14 +33,14 @@ erDiagram
         BIGINT id PK
         VARCHAR(100) name
         INT price
-        INT stock
+        INT stock_quantity
         DATETIME created_at
     }
 
     "ORDER" {
         BIGINT id PK
         BIGINT user_id FK
-        BIGINT user_coupon_id FK
+        BIGINT coupon_id FK
         INT total_item_price
         INT discount_amount
         INT paid_amount
@@ -111,7 +111,7 @@ CREATE TABLE product (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     price INT NOT NULL,
-    stock INT NOT NULL,
+    stock_quantity INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -157,6 +157,7 @@ CREATE TABLE order_item (
     product_id BIGINT NOT NULL,
     quantity INT NOT NULL,
     unit_price INT NOT NULL,
+    price INT NOT NULL,
     INDEX idx_order_item_order_id (order_id),
     INDEX idx_order_item_product_id (product_id)
 );
