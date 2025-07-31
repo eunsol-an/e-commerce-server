@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.common.dto.CouponDto;
+import kr.hhplus.be.server.domain.coupon.presentation.CouponDto;
 import kr.hhplus.be.server.exception.ApiException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +66,7 @@ public interface CouponApiDocs {
                             }))
     })
     @PostMapping("/issue")
-    ResponseEntity<CouponDto.CouponIssueResponse> issueCoupon(
+    ResponseEntity<Void> issueCoupon(
             @RequestBody
             @Parameter(description = "쿠폰 발급 요청 정보", required = true)
             CouponDto.CouponIssueRequest request
