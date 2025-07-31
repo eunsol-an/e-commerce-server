@@ -35,10 +35,9 @@ class OrderServiceTest {
                 List.of(
                         OrderItem.create(101L, 2, 2000),
                         OrderItem.create(102L, 1, 3000)
-                ),
-                7000,
-                1000
+                )
         );
+        newOrder.applyDiscount(1000L);
 
         Order savedOrder = newOrder; // 테스트에서는 저장 후 객체가 동일하다고 가정
 

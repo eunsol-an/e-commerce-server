@@ -8,6 +8,7 @@ import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.point.applicatioin.PointService;
 import kr.hhplus.be.server.domain.product.application.ProductService;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
+import kr.hhplus.be.server.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static kr.hhplus.be.server.exception.ErrorCode.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -44,6 +47,7 @@ class OrderFacadeTest {
         Long couponPolicyId = 10L;
         Long productId = 100L;
         int quantity = 2;
+        int couponQuantity = 100;
         long price = 5000L;
         long totalPrice = price * quantity;
         long discount = 3000L;
@@ -55,31 +59,33 @@ class OrderFacadeTest {
         );
 
         Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
+        List<Product> products = List.of(product);
         Coupon coupon = Coupon.of(99L, couponPolicyId, CouponStatus.ISSUED);
         CouponPolicy couponPolicy = CouponPolicy.of(
                 couponPolicyId,
                 discount,
-                quantity,
-                100,
+                couponQuantity,
+                99,
                 365);
 
-        when(productService.validateStock(productId, quantity)).thenReturn(product);
-        when(couponService.validate(couponPolicyId, userId)).thenReturn(coupon);
-        when(couponService.getCouponPolicy(coupon.getId())).thenReturn(couponPolicy);
-        when(productService.calculateTotalItemPrice(command.items())).thenReturn(totalPrice);
+        Order mockOrder = mock(Order.class);
+        when(productService.validateStocks(command.items())).thenReturn(products);
+        when(orderService.createOrder(command, products)).thenReturn(mockOrder);
+        when(couponService.applyCoupon(couponPolicyId, userId)).thenReturn(discount);
+        when(mockOrder.getPaidAmount()).thenReturn((totalPrice) - discount);
 
         // when
         orderFacade.orderPayment(command);
 
         // then
-        verify(productService, times(1)).validateStock(productId, quantity);
-        verify(couponService, times(1)).validate(couponPolicyId, userId);
-        verify(couponService, times(1)).getCouponPolicy(coupon.getId());
-        verify(couponService, times(1)).use(couponPolicyId, userId);
-        verify(pointService, times(1)).validateBalance(userId, totalPrice - discount);
+        verify(productService, times(1)).validateStocks(command.items());
+        verify(orderService, times(1)).createOrder(command, products);
+        verify(couponService, times(1)).applyCoupon(couponPolicyId, userId);
+        verify(mockOrder, times(1)).applyDiscount(discount);
+        verify(pointService, times(1)).validateBalance(userId, (price * quantity) - discount);
         verify(pointService, times(1)).use(any());
         verify(productService, times(1)).deductStock(command.items());
-        verify(orderService, times(1)).save(any(Order.class));
+        verify(orderService, times(1)).save(mockOrder);
     }
 
     @Test
@@ -96,11 +102,11 @@ class OrderFacadeTest {
                 null
         );
 
-        when(productService.validateStock(productId, quantity)).thenThrow(new RuntimeException("재고 부족"));
+        when(productService.validateStocks(command.items())).thenThrow(new ApiException(OUT_OF_STOCK));
 
         // when & then
-        RuntimeException e = assertThrows(RuntimeException.class, () -> orderFacade.orderPayment(command));
-        assertEquals("재고 부족", e.getMessage());
+        ApiException exception = assertThrows(ApiException.class, () -> orderFacade.orderPayment(command));
+        assertThat(exception.getErrorCode()).isEqualTo(OUT_OF_STOCK);
     }
 
     @Test
@@ -118,12 +124,16 @@ class OrderFacadeTest {
         );
 
         Product product = new Product(productId, "머쉬룸 스탠드", 1000L, 5);
-        when(productService.validateStock(any(), anyInt())).thenReturn(product);
-        when(couponService.validate(couponPolicyId, userId)).thenThrow(new RuntimeException("쿠폰 만료"));
+        List<Product> products = List.of(product);
+        Order mockOrder = mock(Order.class);
+
+        when(productService.validateStocks(command.items())).thenReturn(products);
+        when(orderService.createOrder(command, products)).thenReturn(mockOrder);
+        when(couponService.applyCoupon(couponPolicyId, userId)).thenThrow(new ApiException(COUPON_POLICY_NOT_FOUND));
 
         // when & then
-        RuntimeException e = assertThrows(RuntimeException.class, () -> orderFacade.orderPayment(command));
-        assertEquals("쿠폰 만료", e.getMessage());
+        ApiException exception = assertThrows(ApiException.class, () -> orderFacade.orderPayment(command));
+        assertThat(exception.getErrorCode()).isEqualTo(COUPON_POLICY_NOT_FOUND);
     }
 
     @Test
@@ -142,14 +152,18 @@ class OrderFacadeTest {
         );
 
         Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
+        List<Product> products = List.of(product);
 
-        when(productService.validateStock(productId, quantity)).thenReturn(product);
-        when(productService.calculateTotalItemPrice(command.items())).thenReturn(price);
-        doThrow(new RuntimeException("포인트 부족")).when(pointService).validateBalance(userId, price);
+        Order mockOrder = mock(Order.class);
+
+        when(productService.validateStocks(command.items())).thenReturn(products);
+        when(orderService.createOrder(command, products)).thenReturn(mockOrder);
+        when(mockOrder.getPaidAmount()).thenReturn(price);
+        when(pointService.validateBalance(userId, price)).thenThrow(new ApiException(POINT_NOT_ENOUGH));
 
         // when & then
-        RuntimeException e = assertThrows(RuntimeException.class, () -> orderFacade.orderPayment(command));
-        assertEquals("포인트 부족", e.getMessage());
+        ApiException exception = assertThrows(ApiException.class, () -> orderFacade.orderPayment(command));
+        assertThat(exception.getErrorCode()).isEqualTo(POINT_NOT_ENOUGH);
     }
 
     @Test
@@ -168,17 +182,23 @@ class OrderFacadeTest {
         );
 
         Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
-        when(productService.validateStock(productId, quantity)).thenReturn(product);
-        when(productService.calculateTotalItemPrice(command.items())).thenReturn(price);
+        List<Product> products = List.of(product);
+
+        Order mockOrder = mock(Order.class);
+
+        when(productService.validateStocks(command.items())).thenReturn(products);
+        when(orderService.createOrder(command, products)).thenReturn(mockOrder);
+        when(mockOrder.getPaidAmount()).thenReturn(price);
 
         // when
         orderFacade.orderPayment(command);
 
         // then
-        verify(couponService, never()).validate(any(), any());
-        verify(pointService, times(1)).validateBalance(userId, price);
+        verify(productService, times(1)).validateStocks(command.items());
+        verify(orderService, times(1)).createOrder(command, products);
+        verify(pointService, times(1)).validateBalance(userId, (price * quantity));
         verify(pointService, times(1)).use(any());
         verify(productService, times(1)).deductStock(command.items());
-        verify(orderService, times(1)).save(any(Order.class));
+        verify(orderService, times(1)).save(mockOrder);
     }
 }
