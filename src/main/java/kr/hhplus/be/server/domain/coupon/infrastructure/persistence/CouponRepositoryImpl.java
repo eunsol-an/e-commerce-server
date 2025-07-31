@@ -23,6 +23,12 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
+    public Optional<Coupon> findByCouponPolicyIdAndUserId(Long couponPolicyId, Long userId) {
+        return couponJpaRepository.findByCouponPolicyIdAndUserId(couponPolicyId, userId)
+                .map(couponMapper::toDomain);
+    }
+
+    @Override
     public Coupon save(Coupon coupon) {
         CouponJpaEntity couponJpaEntity = couponMapper.toEntity(coupon);
         return couponMapper.toDomain(couponJpaRepository.save(couponJpaEntity));

@@ -76,7 +76,7 @@ public class CouponService {
             }
 
             // 6. 쿠폰 생성 및 저장
-            Coupon coupon = Coupon.of(userId, couponPolicyId, CouponStatus.ISSUED);
+            Coupon coupon = Coupon.create(userId, couponPolicyId, CouponStatus.ISSUED);
             couponRepository.save(coupon);
 
             // 7. 쿠폰 발급 수량 1 증가
