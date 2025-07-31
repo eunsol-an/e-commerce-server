@@ -20,8 +20,8 @@ public class OrderJpaEntity extends BaseTimeEntity {
     @Column(nullable = false, name = "user_id")
     private Long userId;
 
-    @Column(name = "coupon_policy_id")
-    private Long couponPolicyId;
+    @Column(name = "coupon_id")
+    private Long couponId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItemJpaEntity> items = new ArrayList<>();

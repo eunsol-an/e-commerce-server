@@ -19,7 +19,7 @@ public class CouponController implements CouponApiDocs {
     public ResponseEntity<Void> issueCoupon(
             @RequestBody CouponDto.CouponIssueRequest request
     ) {
-        couponService.issue(request.userId(), request.couponId());
+        couponService.issue(request.userId(), request.couponPolicyId());
         return ResponseEntity.ok().build();
     }
 

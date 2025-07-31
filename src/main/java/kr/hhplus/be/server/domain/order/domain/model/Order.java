@@ -9,27 +9,27 @@ import java.util.List;
 public class Order {
     private Long id;
     private Long userId;
-    private Long couponPolicyId;
+    private Long couponId;
     private List<OrderItem> items;
     private long totalItemPrice;
     private long discountAmount;
     private long paidAmount;
 
     @Builder
-    private Order(Long userId, Long couponPolicyId, List<OrderItem> items, long totalItemPrice, long discountAmount) {
+    private Order(Long userId, Long couponId, List<OrderItem> items, long totalItemPrice, long discountAmount) {
         this.id = null;
         this.userId = userId;
-        this.couponPolicyId = couponPolicyId;
+        this.couponId = couponId;
         this.items = items;
         this.totalItemPrice = totalItemPrice;
         this.discountAmount = discountAmount;
         this.paidAmount = totalItemPrice - discountAmount;
     }
 
-    public static Order create(Long userId, Long couponPolicyId, List<OrderItem> items) {
+    public static Order create(Long userId, Long couponId, List<OrderItem> items) {
         return Order.builder()
                 .userId(userId)
-                .couponPolicyId(couponPolicyId)
+                .couponId(couponId)
                 .items(items)
                 .totalItemPrice(calculateTotalItemAmount(items))
                 .build();

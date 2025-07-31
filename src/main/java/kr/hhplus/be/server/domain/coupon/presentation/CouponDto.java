@@ -10,7 +10,7 @@ public class CouponDto {
             @Schema(description = "유저 ID", example = "1")
             Long userId,
             @Schema(description = "쿠폰 ID", example = "10")
-            Long couponId
+            Long couponPolicyId
     ) {}
 
     @Schema(description = "쿠폰 발급 Response")

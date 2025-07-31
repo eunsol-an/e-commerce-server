@@ -5,7 +5,7 @@ import kr.hhplus.be.server.domain.coupon.domain.model.Coupon;
 import java.util.Optional;
 
 public interface CouponRepository {
-    Optional<Coupon> findByCouponPolicyIdAndUserId(Long couponPolicyId, Long userId);
+    Optional<Coupon> findByIdAndUserId(Long couponPolicyId, Long userId);
     Coupon save(Coupon coupon);
     boolean existsByUserIdAndCouponPolicyId(Long userId, Long couponPolicyId);
 }

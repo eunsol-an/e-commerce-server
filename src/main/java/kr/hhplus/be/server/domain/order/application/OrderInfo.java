@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.domain.order.application;
 
-import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.order.domain.model.OrderItem;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class OrderInfo {
             return new OrderInfo.Order(
                     order.getId(),
                     order.getUserId(),
-                    order.getCouponPolicyId(),
+                    order.getCouponId(),
                     order.getItems(),
                     order.getTotalItemPrice(),
                     order.getDiscountAmount(),
