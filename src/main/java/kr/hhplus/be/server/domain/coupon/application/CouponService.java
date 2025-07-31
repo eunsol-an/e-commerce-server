@@ -44,6 +44,13 @@ public class CouponService {
         couponRepository.save(coupon);
     }
 
+    public long applyCoupon(Long couponPolicyId, Long userId) {
+        Coupon coupon = validate(couponPolicyId, userId);
+        CouponPolicy couponPolicy = getCouponPolicy(coupon.getCouponPolicyId());
+        use(couponPolicyId, userId);
+        return couponPolicy.getDiscountAmount();
+    }
+
     @Transactional
     public void issue(Long userId, Long couponPolicyId) {
         // 1. couponPolicyId 기준으로 락 객체를 가져오거나 새로 생성

@@ -39,15 +39,10 @@ public class ProductService {
         return product;
     }
 
-    public long calculateTotalItemPrice(List<OrderCommand.Item> items) {
+    public List<Product> validateStocks(List<OrderCommand.Item> items) {
         return items.stream()
-                .mapToLong(item -> {
-                    Product product = productRepository.findById(item.productId())
-                            .orElseThrow(() -> new ApiException(PRODUCT_NOT_FOUND));
-
-                    return product.getPrice() * item.quantity();
-                })
-                .sum();
+                .map(itemCommand -> validateStock(itemCommand.productId(), itemCommand.quantity()))
+                .toList();
     }
 
     public void deductStock(List<OrderCommand.Item> items) {

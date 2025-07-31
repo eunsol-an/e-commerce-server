@@ -24,4 +24,7 @@ public class Product {
         }
         this.stockQuantity -= quantity;
     }
+    public long calculatePriceForQuantity(int quantity) {
+        return this.price * quantity;
+    }
 }

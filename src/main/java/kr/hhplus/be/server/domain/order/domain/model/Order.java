@@ -3,7 +3,6 @@ package kr.hhplus.be.server.domain.order.domain.model;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,13 +26,23 @@ public class Order {
         this.paidAmount = totalItemPrice - discountAmount;
     }
 
-    public static Order create(Long userId, Long couponPolicyId, List<OrderItem> items, long totalItemPrice, long discountAmount) {
+    public static Order create(Long userId, Long couponPolicyId, List<OrderItem> items) {
         return Order.builder()
                 .userId(userId)
                 .couponPolicyId(couponPolicyId)
-                .items(items != null ? items : new ArrayList<>())
-                .totalItemPrice(totalItemPrice)
-                .discountAmount(discountAmount)
+                .items(items)
+                .totalItemPrice(calculateTotalItemAmount(items))
                 .build();
+    }
+
+    private static long calculateTotalItemAmount(List<OrderItem> items) {
+        return items.stream()
+                .mapToLong(item -> item.getPrice() * item.getQuantity())
+                .sum();
+    }
+
+    public void applyDiscount(long discountAmount) {
+        this.discountAmount = discountAmount;
+        this.paidAmount = totalItemPrice - discountAmount;
     }
 }
