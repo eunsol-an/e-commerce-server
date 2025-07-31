@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.order.domain.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,6 +15,7 @@ public class Order {
     private long totalItemPrice;
     private long discountAmount;
     private long paidAmount;
+    private LocalDateTime createdAt;
 
     @Builder
     private Order(Long userId, Long couponId, List<OrderItem> items, long totalItemPrice, long discountAmount) {

@@ -3,6 +3,8 @@ package kr.hhplus.be.server.domain.order.domain.model;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class OrderItem {
     private Long id;
@@ -10,6 +12,7 @@ public class OrderItem {
     private Long productId;
     private int quantity;
     private long price;
+    private LocalDateTime createdAt;
 
     @Builder
     private OrderItem(Long id, Long orderId, Long productId, int quantity, long price) {
