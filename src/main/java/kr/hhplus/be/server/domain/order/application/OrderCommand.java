@@ -9,14 +9,14 @@ public class OrderCommand {
     public record Create(
             Long userId,
             List<OrderCommand.Item> items,
-            Long couponPolicyId
+            Long couponId
     ) {
-        public static Create of(Long userId, List<OrderDto.OrderItemRequest> items, Long couponPolicyId) {
+        public static Create of(Long userId, List<OrderDto.OrderItemRequest> items, Long couponId) {
             List<OrderCommand.Item> itemsList = new ArrayList<>();
             for (OrderDto.OrderItemRequest item : items) {
                 itemsList.add(OrderCommand.Item.of(item.productId(), item.quantity()));
             }
-            return new Create(userId, itemsList, couponPolicyId);
+            return new Create(userId, itemsList, couponId);
         }
     }
 

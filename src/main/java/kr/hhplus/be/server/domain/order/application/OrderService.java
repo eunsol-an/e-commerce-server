@@ -24,7 +24,7 @@ public class OrderService {
 
     public Order createOrder(OrderCommand.Create command, List<Product> products) {
         List<OrderItem> orderItems = this.createOrderItem(command.items(), products);
-        return Order.create(command.userId(), command.couponPolicyId(), orderItems);
+        return Order.create(command.userId(), command.couponId(), orderItems);
     }
 
     public List<OrderItem> createOrderItem(List<OrderCommand.Item> itemsCommand, List<Product> products) {

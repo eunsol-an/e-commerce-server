@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.coupon.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.entity.BaseTimeEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "coupon_policy")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CouponPolicyJpaEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

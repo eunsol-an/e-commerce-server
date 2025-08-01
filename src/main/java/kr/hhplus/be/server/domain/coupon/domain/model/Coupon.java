@@ -18,7 +18,16 @@ public class Coupon {
         this.status = status;
     }
 
-    public static Coupon of(Long userId, Long couponPolicyId, CouponStatus status) {
+    public static Coupon of(Long id, Long userId, Long couponPolicyId, CouponStatus status) {
+        return Coupon.builder()
+                .id(id)
+                .userId(userId)
+                .couponPolicyId(couponPolicyId)
+                .status(status)
+                .build();
+    }
+
+    public static Coupon create(Long userId, Long couponPolicyId, CouponStatus status) {
         return Coupon.builder()
                 .userId(userId)
                 .couponPolicyId(couponPolicyId)

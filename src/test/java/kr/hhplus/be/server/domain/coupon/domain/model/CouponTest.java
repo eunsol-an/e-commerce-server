@@ -14,7 +14,7 @@ class CouponTest {
         Long userId = 1L;
         Long couponPolicyId = 100L;
 
-        Coupon coupon = Coupon.of(userId, couponPolicyId, CouponStatus.ISSUED);
+        Coupon coupon = Coupon.create(userId, couponPolicyId, CouponStatus.ISSUED);
 
         assertNull(coupon.getId()); // ID는 외부에서 부여되므로 null
         assertEquals(userId, coupon.getUserId());
@@ -25,21 +25,21 @@ class CouponTest {
     @Test
     @DisplayName("쿠폰이 사용 가능한 상태일 때 isAvailable은 true를 반환한다")
     void 사용가능_쿠폰() {
-        Coupon coupon = Coupon.of(1L, 100L, CouponStatus.ISSUED);
+        Coupon coupon = Coupon.create(1L, 100L, CouponStatus.ISSUED);
         assertTrue(coupon.isAvailable());
     }
 
     @Test
     @DisplayName("쿠폰이 이미 사용된 상태일 때 isAvailable은 false를 반환한다")
     void 사용불가_쿠폰() {
-        Coupon coupon = Coupon.of(1L, 100L, CouponStatus.USED);
+        Coupon coupon = Coupon.create(1L, 100L, CouponStatus.USED);
         assertFalse(coupon.isAvailable());
     }
 
     @Test
     @DisplayName("쿠폰을 사용하면 상태가 USED로 변경된다")
     void 쿠폰_사용() {
-        Coupon coupon = Coupon.of(1L, 100L, CouponStatus.ISSUED);
+        Coupon coupon = Coupon.create(1L, 100L, CouponStatus.ISSUED);
 
         coupon.use();
 

@@ -30,8 +30,8 @@ public class OrderFacade {
         Order newOrder = orderService.createOrder(command, products);
 
         // 3. 쿠폰 유효성 검증 및 사용
-        if (command.couponPolicyId() != null) {
-            long discountAmount = couponService.applyCoupon(command.couponPolicyId(), command.userId());
+        if (command.couponId() != null) {
+            long discountAmount = couponService.applyCoupon(command.couponId(), command.userId());
             newOrder.applyDiscount(discountAmount);
         }
 

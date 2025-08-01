@@ -32,7 +32,7 @@ class ProductServiceTest {
     @DisplayName("상품이 정상적으로 조회 된다")
     void 상품조회() {
         Long productId = 1L;
-        Product product = new Product(productId, "머쉬룸 조명", 32000L, 154);
+        Product product = Product.of(productId, "머쉬룸 조명", 32000L, 154);
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
 
         ProductInfo.Product productInfo = productService.getProduct(productId);

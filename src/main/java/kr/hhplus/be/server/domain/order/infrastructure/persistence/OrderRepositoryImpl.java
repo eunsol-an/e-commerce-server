@@ -8,6 +8,7 @@ import kr.hhplus.be.server.domain.order.infrastructure.persistence.repository.Or
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,5 +27,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Order save(Order order) {
         OrderJpaEntity orderJpaEntity = orderMapper.toEntity(order);
         return orderMapper.toDomain(orderJpaRepository.save(orderJpaEntity));
+    }
+
+    @Override
+    public List<Order> findAll() {
+        return orderJpaRepository.findAll()
+                .stream()
+                .map(orderMapper::toDomain)
+                .toList();
     }
 }
