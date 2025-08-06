@@ -2,16 +2,19 @@ package kr.hhplus.be.server.domain.order.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.entity.BaseTimeEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderJpaEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +23,11 @@ public class OrderJpaEntity extends BaseTimeEntity {
     @Column(nullable = false, name = "user_id")
     private Long userId;
 
-    @Column(name = "coupon_policy_id")
-    private Long couponPolicyId;
+    @Column(name = "coupon_id")
+    private Long couponId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @Setter
     private List<OrderItemJpaEntity> items = new ArrayList<>();
 
     @Column(nullable = false)

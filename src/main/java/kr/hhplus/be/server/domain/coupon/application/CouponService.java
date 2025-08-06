@@ -23,8 +23,8 @@ public class CouponService {
 
     private final Map<Long, Object> couponLocks = new ConcurrentHashMap<>();
 
-    public Coupon validate(Long couponPolicyId, Long userId) {
-        Coupon coupon = couponRepository.findByCouponPolicyIdAndUserId(couponPolicyId, userId)
+    public Coupon validate(Long couponId, Long userId) {
+        Coupon coupon = couponRepository.findByIdAndUserId(couponId, userId)
                 .orElseThrow(() -> new ApiException(COUPON_NOT_FOUNT));
         if (!coupon.isAvailable()) {
             throw new ApiException(COUPON_INVALID_STATUS);
@@ -37,17 +37,17 @@ public class CouponService {
                 .orElseThrow(() -> new ApiException(COUPON_POLICY_NOT_FOUND));
     }
 
-    public void use(Long couponPolicyId, Long userId) {
-        Coupon coupon = couponRepository.findByCouponPolicyIdAndUserId(couponPolicyId, userId)
+    public void use(Long couponId, Long userId) {
+        Coupon coupon = couponRepository.findByIdAndUserId(couponId, userId)
                 .orElseThrow(() -> new ApiException(COUPON_NOT_FOUNT));
         coupon.use();
         couponRepository.save(coupon);
     }
 
-    public long applyCoupon(Long couponPolicyId, Long userId) {
-        Coupon coupon = validate(couponPolicyId, userId);
+    public long applyCoupon(Long couponId, Long userId) {
+        Coupon coupon = validate(couponId, userId);
         CouponPolicy couponPolicy = getCouponPolicy(coupon.getCouponPolicyId());
-        use(couponPolicyId, userId);
+        use(couponId, userId);
         return couponPolicy.getDiscountAmount();
     }
 
@@ -76,7 +76,7 @@ public class CouponService {
             }
 
             // 6. 쿠폰 생성 및 저장
-            Coupon coupon = Coupon.of(userId, couponPolicyId, CouponStatus.ISSUED);
+            Coupon coupon = Coupon.create(userId, couponPolicyId, CouponStatus.ISSUED);
             couponRepository.save(coupon);
 
             // 7. 쿠폰 발급 수량 1 증가

@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface CouponJpaRepository extends JpaRepository<CouponJpaEntity, Long> {
     Optional<CouponJpaEntity> findByIdAndUserId(Long id, Long userId);
+    Optional<CouponJpaEntity> findByCouponPolicyIdAndUserId(Long couponPolicyId, Long userId);
     boolean existsByUserIdAndCouponPolicyId(Long userId, Long couponPolicyId);
 }

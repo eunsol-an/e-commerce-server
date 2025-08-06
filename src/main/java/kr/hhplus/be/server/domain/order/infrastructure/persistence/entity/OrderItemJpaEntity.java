@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.order.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.common.entity.BaseTimeEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_item")
 @Getter
 @NoArgsConstructor
-public class OrderItemJpaEntity {
+@AllArgsConstructor
+public class OrderItemJpaEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

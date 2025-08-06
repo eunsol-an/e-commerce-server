@@ -33,14 +33,14 @@ erDiagram
         BIGINT id PK
         VARCHAR(100) name
         INT price
-        INT stock
+        INT stock_quantity
         DATETIME created_at
     }
 
     "ORDER" {
         BIGINT id PK
         BIGINT user_id FK
-        BIGINT user_coupon_id FK
+        BIGINT coupon_id FK
         INT total_item_price
         INT discount_amount
         INT paid_amount
@@ -53,6 +53,7 @@ erDiagram
         BIGINT product_id FK
         INT quantity
         INT price
+        DATETIME ordered_at
     }
 
     COUPON_POLICY {
@@ -111,7 +112,7 @@ CREATE TABLE product (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     price INT NOT NULL,
-    stock INT NOT NULL,
+    stock_quantity INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -146,8 +147,7 @@ CREATE TABLE `order` (
     paid_amount INT NOT NULL,
     ordered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_order_user_id (user_id),
-    INDEX idx_order_coupon_id (coupon_id),
-    INDEX idx_order_ordered_at (ordered_at) -- 상위 상품 조회 대비
+    INDEX idx_order_coupon_id (coupon_id)
 );
 
 -- 주문 항목 테이블
@@ -156,8 +156,10 @@ CREATE TABLE order_item (
     order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity INT NOT NULL,
-    unit_price INT NOT NULL,
+    price INT NOT NULL,
+    ordered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_order_item_order_id (order_id),
-    INDEX idx_order_item_product_id (product_id)
+    INDEX idx_order_item_product_id (product_id),
+    INDEX idx_order_item_ordered_at_product_id (ordered_at, product_id) -- 상위 상품 조회용 복합 인덱스
 );
 ```

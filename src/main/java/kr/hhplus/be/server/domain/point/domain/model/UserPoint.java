@@ -26,6 +26,13 @@ public class UserPoint {
                 .build();
     }
 
+    public static UserPoint create(long balance) {
+        return UserPoint.builder()
+                .id(null)
+                .balance(balance)
+                .build();
+    }
+
     public void charge(long amount) {
         if (amount <= 0) {
             throw new ApiException(USER_POINT_INVALID_CHARGE_AMOUNT);

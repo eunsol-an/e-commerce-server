@@ -58,9 +58,9 @@ class OrderFacadeTest {
                 couponPolicyId
         );
 
-        Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
+        Product product = Product.of(productId, "머쉬룸 스탠드", price, 10);
         List<Product> products = List.of(product);
-        Coupon coupon = Coupon.of(99L, couponPolicyId, CouponStatus.ISSUED);
+        Coupon coupon = Coupon.create(99L, couponPolicyId, CouponStatus.ISSUED);
         CouponPolicy couponPolicy = CouponPolicy.of(
                 couponPolicyId,
                 discount,
@@ -123,7 +123,7 @@ class OrderFacadeTest {
                 couponPolicyId
         );
 
-        Product product = new Product(productId, "머쉬룸 스탠드", 1000L, 5);
+        Product product = Product.of(productId, "머쉬룸 스탠드", 1000L, 5);
         List<Product> products = List.of(product);
         Order mockOrder = mock(Order.class);
 
@@ -151,7 +151,7 @@ class OrderFacadeTest {
                 null
         );
 
-        Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
+        Product product = Product.of(productId, "머쉬룸 스탠드", price, 10);
         List<Product> products = List.of(product);
 
         Order mockOrder = mock(Order.class);
@@ -181,7 +181,7 @@ class OrderFacadeTest {
                 null
         );
 
-        Product product = new Product(productId, "머쉬룸 스탠드", price, 10);
+        Product product = Product.of(productId, "머쉬룸 스탠드", price, 10);
         List<Product> products = List.of(product);
 
         Order mockOrder = mock(Order.class);
