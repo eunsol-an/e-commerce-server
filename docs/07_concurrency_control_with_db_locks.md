@@ -223,17 +223,17 @@ public void issue(Long userId, Long couponPolicyId) {
 ### 5-1. 상품 재고 차감
 
 - **테스트 시나리오**: 동시에 100개의 요청으로 재고를 감소시킨다
-- **테스트 구현**: link
+- **테스트 구현**: [재고 차감 동시성 테스트](https://github.com/eunsol-an/e-commerce-server/blob/step09-10/src/test/java/kr/hhplus/be/server/domain/product/application/ProductServiceConcurrencyTest.java)
 
 ### 5-2. 유저 포인트 잔액
 
 - **테스트 시나리오**: 동시에 10개의 요청으로 잔액을 충전시킨다 (재시도 로직 포함)
-- **테스트 구현**: link
+- **테스트 구현**: [유저 포인트 잔액 동시성 테스트](https://github.com/eunsol-an/e-commerce-server/blob/step09-10/src/test/java/kr/hhplus/be/server/domain/point/applicatioin/PointServiceConcurrencyTest.java)
 
 ### 5-3. 선착순 쿠폰
 
 - **테스트 시나리오**: 동시에 100개의 요청으로 쿠폰이 정상 발급된다
-- **테스트 구현**: link
+- **테스트 구현**: [쿠폰 발급 동시성 테스트](https://github.com/eunsol-an/e-commerce-server/blob/step09-10/src/test/java/kr/hhplus/be/server/domain/coupon/application/CouponServiceConcurrencyTest.java)
 
 <br/>
 
