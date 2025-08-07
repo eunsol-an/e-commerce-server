@@ -10,19 +10,22 @@ import static kr.hhplus.be.server.exception.ErrorCode.*;
 public class UserPoint {
     private Long id;
     private long balance;
+    private Long version;
 
     private static final long MAX_BALANCE = 100_000;
 
     @Builder
-    private UserPoint(Long id, long balance) {
+    private UserPoint(Long id, long balance, Long version) {
         this.id = id;
         this.balance = balance;
+        this.version = version;
     }
 
-    public static UserPoint of(Long id, long balance) {
+    public static UserPoint of(Long id, long balance, Long version) {
         return UserPoint.builder()
                 .id(id)
                 .balance(balance)
+                .version(version)
                 .build();
     }
 
@@ -30,6 +33,7 @@ public class UserPoint {
         return UserPoint.builder()
                 .id(null)
                 .balance(balance)
+                .version(0L)
                 .build();
     }
 

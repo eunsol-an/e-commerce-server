@@ -24,6 +24,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public Optional<Product> findByIdWithPessimisticLock(Long id) {
+        return productJpaRepository.findByIdWithPessimisticLock(id)
+                .map(productMapper::toDomain);
+    }
+
+    @Override
     public List<Product> findAll() {
         return productJpaRepository.findAll()
                 .stream()
@@ -35,5 +41,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product save(Product product) {
         ProductJpaEntity productJpaEntity = productMapper.toEntity(product);
         return productMapper.toDomain(productJpaRepository.save(productJpaEntity));
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        productJpaRepository.deleteAllInBatch();
     }
 }

@@ -45,9 +45,10 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
     public void deductStock(List<OrderCommand.Item> items) {
         items.forEach(item -> {
-            Product product = productRepository.findById(item.productId())
+            Product product = productRepository.findByIdWithPessimisticLock(item.productId())
                     .orElseThrow(() -> new ApiException(PRODUCT_NOT_FOUND));
 
             product.deductStock(item.quantity());

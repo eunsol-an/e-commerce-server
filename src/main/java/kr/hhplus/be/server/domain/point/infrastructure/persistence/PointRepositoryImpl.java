@@ -23,8 +23,19 @@ public class PointRepositoryImpl implements PointRepository {
     }
 
     @Override
+    public Optional<UserPoint> findByIdWithOptimisticLock(Long id) {
+        return pointJpaRepository.findByIdWithOptimisticLock(id)
+                .map(pointMapper::toDomain);
+    }
+
+    @Override
     public UserPoint save(UserPoint userPoint) {
         UserPointJpaEntity pointJpaEntity = pointMapper.toEntity(userPoint);
         return pointMapper.toDomain(pointJpaRepository.save(pointJpaEntity));
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        pointJpaRepository.deleteAllInBatch();
     }
 }

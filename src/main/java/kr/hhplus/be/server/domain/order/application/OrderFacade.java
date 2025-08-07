@@ -39,7 +39,7 @@ public class OrderFacade {
         pointService.validateBalance(command.userId(), newOrder.getPaidAmount());
 
         // 5. 포인트 차감
-        pointService.use(PointCommand.Use.of(UserPoint.of(command.userId(), newOrder.getPaidAmount())));
+        pointService.use(PointCommand.Use.of(UserPoint.of(command.userId(), newOrder.getPaidAmount(), 0L)));
 
         // 6. 재고 차감
         productService.deductStock(command.items());

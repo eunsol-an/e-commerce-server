@@ -7,10 +7,8 @@ import kr.hhplus.be.server.domain.coupon.domain.repository.CouponPolicyRepositor
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.order.domain.repository.OrderRepository;
-import kr.hhplus.be.server.domain.point.applicatioin.PointService;
 import kr.hhplus.be.server.domain.point.domain.model.UserPoint;
 import kr.hhplus.be.server.domain.point.domain.repository.PointRepository;
-import kr.hhplus.be.server.domain.product.application.ProductService;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
 import kr.hhplus.be.server.domain.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.exception.ApiException;
@@ -106,7 +104,7 @@ class OrderFacadeIntegrationTest {
     @DisplayName("포인트 부족으로 주문 결제 실패")
     void 포인트_부족_실패() {
         // 유저 포인트 초기화 (부족하게 설정)
-        pointRepository.save(UserPoint.of(userId, 100L));
+        pointRepository.save(UserPoint.of(userId, 100L, 0L));
 
         OrderCommand.Create command = new OrderCommand.Create(
                 userId,

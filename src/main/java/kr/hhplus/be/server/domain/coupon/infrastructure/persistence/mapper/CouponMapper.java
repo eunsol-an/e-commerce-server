@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 public class CouponMapper {
     public Coupon toDomain(CouponJpaEntity entity) {
         if (entity == null) return null;
-        return Coupon.of(entity.getId(), entity.getUserId(), entity.getCouponPolicyId(), entity.getStatus());
+        return Coupon.of(entity.getId(), entity.getUserId(), entity.getCouponPolicyId(), entity.getStatus(), entity.getVersion());
     }
 
     public CouponJpaEntity toEntity(Coupon domain) {
         if (domain == null) return null;
-        return new CouponJpaEntity(domain.getId(), domain.getUserId(), domain.getCouponPolicyId(), domain.getStatus());
+        return new CouponJpaEntity(domain.getId(), domain.getUserId(), domain.getCouponPolicyId(), domain.getStatus(), domain.getVersion());
     }
 }

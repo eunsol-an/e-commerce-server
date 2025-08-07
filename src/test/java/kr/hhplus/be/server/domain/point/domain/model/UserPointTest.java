@@ -3,7 +3,6 @@ package kr.hhplus.be.server.domain.point.domain.model;
 import kr.hhplus.be.server.exception.ApiException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -20,7 +19,7 @@ class UserPointTest {
         @ValueSource(longs = {1, 500, 999})
         @DisplayName("정상적으로 포인트가 충전된다")
         void 포인트_충전(long validAmount) {
-            UserPoint userPoint = UserPoint.of(1L, 1000L);
+            UserPoint userPoint = UserPoint.of(1L, 1000L, 0L);
 
             userPoint.charge(validAmount);
 
@@ -31,7 +30,7 @@ class UserPointTest {
         @ValueSource(longs = {0, -100})
         @DisplayName("0원 이하 금액으로 충전시 예외가 발생한다")
         void 충전금액_경계값_예외(long invalidAmount) {
-            UserPoint userPoint = UserPoint.of(1L, 1000L);
+            UserPoint userPoint = UserPoint.of(1L, 1000L, 0L);
 
             assertThrows(ApiException.class, () -> userPoint.charge(invalidAmount));
         }
@@ -44,7 +43,7 @@ class UserPointTest {
         })
         @DisplayName("최대 잔고 금액 초과 충전시 예외가 발생한다")
         void 최대잔고_초과_예외(long currentPoint, long chargeAmount) {
-            UserPoint userPoint = UserPoint.of(1L, currentPoint);
+            UserPoint userPoint = UserPoint.of(1L, currentPoint, 0L);
 
             assertThrows(ApiException.class, () -> userPoint.charge(chargeAmount));
         }
@@ -57,7 +56,7 @@ class UserPointTest {
         @ValueSource(longs = {1, 500, 1000})
         @DisplayName("정상적으로 포인트가 차감된다")
         void 포인트_사용(long validAmount) {
-            UserPoint userPoint = UserPoint.of(1L, 1000L);
+            UserPoint userPoint = UserPoint.of(1L, 1000L, 0L);
 
             userPoint.use(validAmount);
 
@@ -72,7 +71,7 @@ class UserPointTest {
         })
         @DisplayName("잔액보다 큰 금액을 사용하면 예외가 발생한다")
         void 포인트_부족_예외(long currentPoint, long useAmount) {
-            UserPoint userPoint = UserPoint.of(1L, currentPoint);
+            UserPoint userPoint = UserPoint.of(1L, currentPoint, 0L);
 
             assertThrows(ApiException.class, () -> userPoint.use(useAmount));
         }
