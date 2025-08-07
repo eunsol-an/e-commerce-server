@@ -23,8 +23,19 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepository {
     }
 
     @Override
+    public Optional<CouponPolicy> findByIdWithPessimisticLock(Long couponPolicyId) {
+        return couponPolicyJpaRepository.findByIdWithPessimisticLock(couponPolicyId)
+                .map(couponPolicyMapper::toDomain);
+    }
+
+    @Override
     public CouponPolicy save(CouponPolicy couponPolicy) {
         CouponPolicyJpaEntity couponPolicyJpaEntity = couponPolicyMapper.toEntity(couponPolicy);
         return couponPolicyMapper.toDomain(couponPolicyJpaRepository.save(couponPolicyJpaEntity));
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        couponPolicyJpaRepository.deleteAllInBatch();
     }
 }
