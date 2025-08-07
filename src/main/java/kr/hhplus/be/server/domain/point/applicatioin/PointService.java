@@ -18,7 +18,7 @@ public class PointService {
 
     @Transactional
     public void charge(PointCommand.Charge command) {
-        UserPoint userPoint = pointRepository.findById(command.userId())
+        UserPoint userPoint = pointRepository.findByIdWithOptimisticLock(command.userId())
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 
         userPoint.charge(command.amount());
@@ -28,7 +28,7 @@ public class PointService {
 
     @Transactional
     public void use(PointCommand.Use command) {
-        UserPoint userPoint = pointRepository.findById(command.userId())
+        UserPoint userPoint = pointRepository.findByIdWithOptimisticLock(command.userId())
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 
         userPoint.use(command.amount());
