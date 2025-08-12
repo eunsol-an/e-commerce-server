@@ -18,4 +18,7 @@ public class UserPointJpaEntity extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Long balance;
+
+    @Version
+    private Long version;
 }

@@ -5,6 +5,9 @@ import kr.hhplus.be.server.domain.point.domain.model.UserPoint;
 import kr.hhplus.be.server.domain.point.domain.repository.PointRepository;
 import kr.hhplus.be.server.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +20,13 @@ public class PointService {
     private final PointRepository pointRepository;
 
     @Transactional
+    @Retryable(
+            value = { ObjectOptimisticLockingFailureException.class },
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2.0)
+    )
     public void charge(PointCommand.Charge command) {
-        UserPoint userPoint = pointRepository.findById(command.userId())
+        UserPoint userPoint = pointRepository.findByIdWithOptimisticLock(command.userId())
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 
         userPoint.charge(command.amount());
@@ -27,8 +35,13 @@ public class PointService {
     }
 
     @Transactional
+    @Retryable(
+            value = { ObjectOptimisticLockingFailureException.class },
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 100, multiplier = 2.0)
+    )
     public void use(PointCommand.Use command) {
-        UserPoint userPoint = pointRepository.findById(command.userId())
+        UserPoint userPoint = pointRepository.findByIdWithOptimisticLock(command.userId())
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 
         userPoint.use(command.amount());

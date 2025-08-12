@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 public class PointMapper {
     public UserPoint toDomain(UserPointJpaEntity entity) {
         if (entity == null) return null;
-        return UserPoint.of(entity.getId(), entity.getBalance());
+        return UserPoint.of(entity.getId(), entity.getBalance(), entity.getVersion());
     }
 
     public UserPointJpaEntity toEntity(UserPoint domain) {
         if (domain == null) return null;
-        return new UserPointJpaEntity(domain.getId(), domain.getBalance());
+        return new UserPointJpaEntity(domain.getId(), domain.getBalance(), domain.getVersion());
     }
 }

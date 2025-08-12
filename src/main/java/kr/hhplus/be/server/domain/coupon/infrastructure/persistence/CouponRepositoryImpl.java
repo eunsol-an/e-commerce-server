@@ -17,8 +17,8 @@ public class CouponRepositoryImpl implements CouponRepository {
     private final CouponMapper couponMapper;
 
     @Override
-    public Optional<Coupon> findByIdAndUserId(Long couponPolicyId, Long userId) {
-        return couponJpaRepository.findByIdAndUserId(couponPolicyId, userId)
+    public Optional<Coupon> findByIdAndUserIdAndStatusIssued(Long couponPolicyId, Long userId) {
+        return couponJpaRepository.findByIdAndUserIdAndStatusIssued(couponPolicyId, userId)
                 .map(couponMapper::toDomain);
     }
 
@@ -37,5 +37,10 @@ public class CouponRepositoryImpl implements CouponRepository {
     @Override
     public boolean existsByUserIdAndCouponPolicyId(Long userId, Long couponPolicyId) {
         return couponJpaRepository.existsByUserIdAndCouponPolicyId(userId, couponPolicyId);
+    }
+
+    @Override
+    public void deleteAllInBatch() {
+        couponJpaRepository.deleteAllInBatch();
     }
 }

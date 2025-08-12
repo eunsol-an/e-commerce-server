@@ -24,5 +24,9 @@ public class CouponJpaEntity extends BaseTimeEntity {
     private Long couponPolicyId;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CouponStatus status;
+
+    @Version
+    private Long version;
 }
