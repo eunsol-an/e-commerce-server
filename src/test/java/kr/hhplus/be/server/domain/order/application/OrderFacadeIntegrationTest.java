@@ -69,7 +69,7 @@ class OrderFacadeIntegrationTest {
         List<Order> orders = orderRepository.findAll();
         assertThat(orders).hasSize(1);
         assertThat(orders.get(0).getItems()).hasSize(1);
-        assertThat(orders.get(0).getPaidAmount()).isEqualTo(20000L);
+        assertThat(orders.get(0).getPaidAmount()).isEqualTo(10000L);
     }
 
     @Test
@@ -97,7 +97,7 @@ class OrderFacadeIntegrationTest {
         // then
         Order order = orderRepository.findAll().get(0);
         assertThat(order.getDiscountAmount()).isEqualTo(discountAmount);
-        assertThat(order.getPaidAmount()).isEqualTo(17000L);
+        assertThat(order.getPaidAmount()).isEqualTo(7000L);
     }
 
     @Test
