@@ -1,13 +1,17 @@
 package kr.hhplus.be.server.domain.product.infrastructure.persistence;
 
+import kr.hhplus.be.server.domain.product.application.ProductQuantity;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
 import kr.hhplus.be.server.domain.product.domain.repository.ProductRepository;
 import kr.hhplus.be.server.domain.product.infrastructure.persistence.entity.ProductJpaEntity;
 import kr.hhplus.be.server.domain.product.infrastructure.persistence.mapper.ProductMapper;
+import kr.hhplus.be.server.domain.product.infrastructure.persistence.mapper.ProductQuantityMapper;
 import kr.hhplus.be.server.domain.product.infrastructure.persistence.repository.ProductJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,7 @@ import java.util.Optional;
 public class ProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository productJpaRepository;
     private final ProductMapper productMapper;
+    private final ProductQuantityMapper productQuantityMapper;
 
     @Override
     public Optional<Product> findById(Long id) {
@@ -46,5 +51,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public void deleteAllInBatch() {
         productJpaRepository.deleteAllInBatch();
+    }
+
+    @Override
+    public List<ProductQuantity> findTop5ProductsLast3Days() {
+        return productJpaRepository.findTop5ProductsLast3Days(LocalDateTime.now().minusDays(3), PageRequest.of(0, 5))
+                .stream()
+                .map(projection
+                        -> productQuantityMapper.toDomain(projection.getProductId(), projection.getTotalQuantity()))
+                .toList();
     }
 }
