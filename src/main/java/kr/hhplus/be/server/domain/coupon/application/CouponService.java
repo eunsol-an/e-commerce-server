@@ -28,7 +28,7 @@ public class CouponService {
                 .orElseThrow(() -> new ApiException(COUPON_POLICY_NOT_FOUND));
     }
 
-    @Transactional
+//    @Transactional
     public long applyCoupon(Long couponId, Long userId) {
         Coupon coupon = getCouponByUser(couponId, userId);
         validateCouponUsable(coupon);
