@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.product.infrastructure.persistence;
 
+import kr.hhplus.be.server.domain.order.infrastructure.persistence.repository.OrderItemJpaRepository;
 import kr.hhplus.be.server.domain.product.application.ProductQuantity;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
 import kr.hhplus.be.server.domain.product.domain.repository.ProductRepository;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository productJpaRepository;
+    private final OrderItemJpaRepository orderItemJpaRepository;
     private final ProductMapper productMapper;
     private final ProductQuantityMapper productQuantityMapper;
 
@@ -55,7 +57,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<ProductQuantity> findTop5ProductsLast3Days() {
-        return productJpaRepository.findTop5ProductsLast3Days(LocalDateTime.now().minusDays(3), PageRequest.of(0, 5))
+        return orderItemJpaRepository.findTop5ProductsLast3Days(LocalDateTime.now().minusDays(3), PageRequest.of(0, 5))
                 .stream()
                 .map(projection
                         -> productQuantityMapper.toDomain(projection.getProductId(), projection.getTotalQuantity()))
