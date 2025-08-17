@@ -16,7 +16,7 @@ public class ProductCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String CACHE_KEY = "cache:product:top5:last3days";
-    private static final Duration TTL = Duration.ofDays(1);
+    private static final Duration TTL = Duration.ofDays(2);
 
     @Transactional(readOnly = true)
     public List<ProductQuantity> getTop5ProductsLast3Days() {
