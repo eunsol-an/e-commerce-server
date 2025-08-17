@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order.application;
 
 import jakarta.transaction.Transactional;
+import kr.hhplus.be.server.common.annotation.DistributedLock;
 import kr.hhplus.be.server.domain.coupon.application.CouponService;
 import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.point.applicatioin.PointCommand;
@@ -22,6 +23,12 @@ public class OrderFacade {
     private final CouponService couponService;
 
     @Transactional
+    @DistributedLock(
+            prefix = "product",
+            keys = {"#command.items.![productId]"}, // 멀티락
+            waitTime = 5,
+            leaseTime = 2
+    )
     public void orderPayment(OrderCommand.Create command) {
         // 1. 재고 확인
         List<Product> products = productService.validateStocks(command.items());

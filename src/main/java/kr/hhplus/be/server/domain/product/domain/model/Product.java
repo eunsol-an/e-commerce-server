@@ -40,7 +40,7 @@ public class Product {
     }
 
     public boolean isAvailable(int requestStockQuantity) {
-        return this.stockQuantity > requestStockQuantity;
+        return this.stockQuantity >= requestStockQuantity;
     }
 
     public void deductStock(int quantity) {
@@ -48,8 +48,5 @@ public class Product {
             throw new ApiException(OUT_OF_STOCK);
         }
         this.stockQuantity -= quantity;
-    }
-    public long calculatePriceForQuantity(int quantity) {
-        return this.price * quantity;
     }
 }

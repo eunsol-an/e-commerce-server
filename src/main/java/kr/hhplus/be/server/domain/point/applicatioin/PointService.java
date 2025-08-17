@@ -34,7 +34,7 @@ public class PointService {
         pointRepository.save(userPoint);
     }
 
-    @Transactional
+//    @Transactional
     @Retryable(
             value = { ObjectOptimisticLockingFailureException.class },
             maxAttempts = 5,

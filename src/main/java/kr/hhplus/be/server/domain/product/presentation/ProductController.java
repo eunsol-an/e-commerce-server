@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.product.presentation;
 
 import kr.hhplus.be.server.docs.ProductApiDocs;
+import kr.hhplus.be.server.domain.product.application.ProductCacheService;
 import kr.hhplus.be.server.domain.product.application.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController implements ProductApiDocs {
     private final ProductService productService;
+    private final ProductCacheService productCacheService;
 
     @GetMapping
     public ResponseEntity<ProductDto.ProductListResponse> getAllProducts() {
@@ -30,10 +32,6 @@ public class ProductController implements ProductApiDocs {
 
     @GetMapping("/popular")
     public ResponseEntity<List<ProductDto.PopularProductResponse>> getPopularProducts() {
-        List<ProductDto.PopularProductResponse> productPopularResponseList = List.of(
-                new ProductDto.PopularProductResponse(1L, "머쉬룸 스탠드", 320000L, 10),
-                new ProductDto.PopularProductResponse(2L, "플라워 러그", 75000L, 5)
-        );
-        return ResponseEntity.ok(productPopularResponseList);
+        return ResponseEntity.ok(ProductDto.PopularProductResponse.of(productCacheService.getTop5ProductsLast3Days()));
     }
 }

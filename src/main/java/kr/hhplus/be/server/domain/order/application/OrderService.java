@@ -36,7 +36,7 @@ public class OrderService {
                     return OrderItem.create(
                             product.getId(),
                             itemCommand.quantity(),
-                            product.calculatePriceForQuantity(itemCommand.quantity())
+                            product.getPrice()
                     );
                 })
                 .toList();

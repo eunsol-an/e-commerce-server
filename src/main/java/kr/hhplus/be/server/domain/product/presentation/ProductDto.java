@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.product.presentation;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.hhplus.be.server.domain.product.application.ProductInfo;
+import kr.hhplus.be.server.domain.product.application.ProductQuantity;
 
 import java.util.List;
 
@@ -44,11 +45,19 @@ public class ProductDto {
     public record PopularProductResponse(
             @Schema(description = "상품 ID", example = "1")
             Long productId,
-            @Schema(description = "상품명", example = "머쉬룸 스탠드")
-            String name,
-            @Schema(description = "총 판매 금액", example = "3200000")
-            Long totalSales,
             @Schema(description = "총 판매 수량", example = "100")
-            Integer quantitySold
-    ) {}
+            Long quantitySold
+    ) {
+        public static PopularProductResponse of(ProductQuantity productQuantity) {
+            return new PopularProductResponse(
+                    productQuantity.productId(),
+                    productQuantity.quantity());
+        }
+
+        public static List<PopularProductResponse> of(List<ProductQuantity> productQuantities) {
+            return productQuantities.stream()
+                    .map(PopularProductResponse::of)
+                    .toList();
+        }
+    }
 }

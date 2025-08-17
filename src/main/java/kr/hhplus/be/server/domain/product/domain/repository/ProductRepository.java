@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.product.domain.repository;
 
+import kr.hhplus.be.server.domain.product.application.ProductQuantity;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface ProductRepository {
     List<Product> findAll();
     Product save(Product product);
     void deleteAllInBatch();
+    List<ProductQuantity> findTop5ProductsLast3Days();
 }
