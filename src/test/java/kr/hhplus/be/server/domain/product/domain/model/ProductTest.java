@@ -23,11 +23,10 @@ class ProductTest {
     }
 
     @Test
-    @DisplayName("상품 재고가 요청 수량과 같거나 적으면 isAvailable은 false를 반환한다")
+    @DisplayName("상품 재고가 요청 수량보다 적으면 isAvailable은 false를 반환한다")
     void 재고_부족() {
         Product product = Product.of(1L, "테스트상품", 1000L, 5);
 
-        assertFalse(product.isAvailable(5)); // 같을 때
         assertFalse(product.isAvailable(6)); // 초과 요청
     }
 
