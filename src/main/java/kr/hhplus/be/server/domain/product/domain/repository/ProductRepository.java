@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface ProductRepository {
     Optional<Product> findById(Long id);
     Optional<Product> findByIdWithPessimisticLock(Long id);
+    List<Product> findByIdIn(List<Long> ids);
     List<Product> findAll();
     Product save(Product product);
     void deleteAllInBatch();
