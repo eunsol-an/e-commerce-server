@@ -9,6 +9,7 @@ import kr.hhplus.be.server.domain.point.applicatioin.PointService;
 import kr.hhplus.be.server.domain.point.domain.model.UserPoint;
 import kr.hhplus.be.server.domain.product.application.ProductService;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
+import kr.hhplus.be.server.domain.ranking.application.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class OrderFacade {
     private final ProductService productService;
     private final PointService pointService;
     private final CouponService couponService;
+    private final RankingService rankingService;
 
     @Transactional
     @DistributedLock(
@@ -53,6 +55,9 @@ public class OrderFacade {
 
         // 7. 주문 저장
         orderService.save(newOrder);
+
+        // 8. 주문 후 랭킹 점수 증가
+        newOrder.getItems().forEach(item -> rankingService.increaseScore(item.getProductId(), item.getQuantity()));
     }
 }
 
