@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.ranking.infrastructure.persistence.redis;
+package kr.hhplus.be.server.domain.ranking.infrastructure.redis.repository;
 
 import kr.hhplus.be.server.common.cache.CacheKey;
 import lombok.RequiredArgsConstructor;

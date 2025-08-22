@@ -1,5 +1,6 @@
-package kr.hhplus.be.server.domain.ranking.application;
+package kr.hhplus.be.server.domain.ranking.infrastructure.batch;
 
+import kr.hhplus.be.server.domain.ranking.application.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

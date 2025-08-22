@@ -1,7 +1,7 @@
-package kr.hhplus.be.server.domain.ranking.infrastructure.persistence;
+package kr.hhplus.be.server.domain.ranking.infrastructure.redis;
 
 import kr.hhplus.be.server.domain.ranking.domain.repository.RankingRepository;
-import kr.hhplus.be.server.domain.ranking.infrastructure.persistence.redis.RedisRakingRepository;
+import kr.hhplus.be.server.domain.ranking.infrastructure.redis.repository.RedisRakingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
