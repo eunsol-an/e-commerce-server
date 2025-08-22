@@ -7,7 +7,7 @@ import java.time.Duration;
 
 @Getter
 @AllArgsConstructor
-public enum CacheKey {
+public enum RedisKeys {
     PRODUCT_RANKING("product:ranking", Duration.ofDays(7)),
     PRODUCT_RANKING_3DAYS("product:ranking:3days", Duration.ofMinutes(30)),
     ;

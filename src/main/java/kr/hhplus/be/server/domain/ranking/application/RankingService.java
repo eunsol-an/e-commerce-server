@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.ranking.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.hhplus.be.server.common.cache.CacheKey;
+import kr.hhplus.be.server.common.cache.RedisKeys;
 import kr.hhplus.be.server.common.cache.RedisCacheRepository;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
 import kr.hhplus.be.server.domain.product.domain.repository.ProductRepository;
@@ -32,7 +32,7 @@ public class RankingService {
     @Transactional(readOnly = true)
     public List<RankedProductInfo.RankedProduct> getTop5ProductsLast3Days() {
         // 1. 캐시 확인 (Look-Aside 전략)
-        String cachedJson = redisCacheRepository.get(CacheKey.PRODUCT_RANKING_3DAYS);
+        String cachedJson = redisCacheRepository.get(RedisKeys.PRODUCT_RANKING_3DAYS);
         if (cachedJson != null) {
             return deserialize(cachedJson);
         }
@@ -49,7 +49,7 @@ public class RankingService {
 
         // 4. 캐시에 저장 (TTL: 10분)
         String json = serialize(products);
-        redisCacheRepository.set(CacheKey.PRODUCT_RANKING_3DAYS, json);
+        redisCacheRepository.set(RedisKeys.PRODUCT_RANKING_3DAYS, json);
 
         return RankedProductInfo.RankedProduct.of(products);
     }
@@ -62,14 +62,14 @@ public class RankingService {
         List<Long> productIds = rankingRepository.getTop5ProductsLast3Days();
         List<Product> products = productRepository.findByIdIn(productIds);
         String json = serialize(products);
-        redisCacheRepository.set(CacheKey.PRODUCT_RANKING_3DAYS, json);
+        redisCacheRepository.set(RedisKeys.PRODUCT_RANKING_3DAYS, json);
     }
 
     /**
      * 캐시 삭제 (이벤트 발생 시 사용)
      */
     public void evictTop5ProductsCache() {
-        redisCacheRepository.delete(CacheKey.PRODUCT_RANKING_3DAYS);
+        redisCacheRepository.delete(RedisKeys.PRODUCT_RANKING_3DAYS);
     }
 
 

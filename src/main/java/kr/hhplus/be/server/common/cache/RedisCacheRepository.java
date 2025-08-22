@@ -17,29 +17,29 @@ public class RedisCacheRepository {
     /**
      * 캐시 저장 (enum 사용, TTL 지정 가능)
      */
-    public void set(CacheKey cacheKey, String value, Duration ttl) {
-        redisTemplate.opsForValue().set(applyPrefix(cacheKey.getKey()), value, ttl);
+    public void set(RedisKeys redisKeys, String value, Duration ttl) {
+        redisTemplate.opsForValue().set(applyPrefix(redisKeys.getKey()), value, ttl);
     }
 
     /**
      * 캐시 저장 (enum 사용, enum의 TTL 사용)
      */
-    public void set(CacheKey cacheKey, String value) {
-        set(cacheKey, value, cacheKey.getTtl());
+    public void set(RedisKeys redisKeys, String value) {
+        set(redisKeys, value, redisKeys.getTtl());
     }
 
     /**
      * 캐시 조회
      */
-    public String get(CacheKey cacheKey) {
-        return redisTemplate.opsForValue().get(applyPrefix(cacheKey.getKey()));
+    public String get(RedisKeys redisKeys) {
+        return redisTemplate.opsForValue().get(applyPrefix(redisKeys.getKey()));
     }
 
     /**
      * 캐시 삭제
      */
-    public void delete(CacheKey cacheKey) {
-        redisTemplate.delete(applyPrefix(cacheKey.getKey()));
+    public void delete(RedisKeys redisKeys) {
+        redisTemplate.delete(applyPrefix(redisKeys.getKey()));
     }
 
     /**
