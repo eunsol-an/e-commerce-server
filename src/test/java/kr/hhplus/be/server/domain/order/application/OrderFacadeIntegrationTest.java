@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.order.application;
 import kr.hhplus.be.server.domain.coupon.application.CouponService;
 import kr.hhplus.be.server.domain.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.domain.coupon.domain.model.CouponPolicy;
+import kr.hhplus.be.server.domain.coupon.domain.model.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponPolicyRepository;
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.domain.order.domain.model.Order;
@@ -81,7 +82,7 @@ class OrderFacadeIntegrationTest {
         policy = couponPolicyRepository.save(policy);
 
         // 쿠폰 발급
-        couponService.issue(userId, policy.getId());
+        couponRepository.save(Coupon.create(userId, policy.getId(), CouponStatus.ISSUED));
         Coupon coupon = couponRepository.findByCouponPolicyIdAndUserId(policy.getId(), userId)
                 .orElseThrow();
 
