@@ -20,7 +20,7 @@ public class RankingBatchJob {
     @Scheduled(cron = "0 0 0 * * *")
     public void refreshCache() {
         // 캐시 초기화 → 새로 집계된 데이터 기반으로 다시 채움
-        rankingService.evictTop5ProductsCache();
+        rankingService.refreshTop5ProductsCache();
     }
 }
 
