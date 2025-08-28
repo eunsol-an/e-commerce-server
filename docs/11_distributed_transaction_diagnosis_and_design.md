@@ -257,7 +257,6 @@ public class ProductEventHandler {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleCompensation(StockDeductFailedEvent event) {
         eventPublisher.publishEvent(new PointRefundedEvent(event.getOrderId()));
     }
