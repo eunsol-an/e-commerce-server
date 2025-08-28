@@ -3,14 +3,15 @@ package kr.hhplus.be.server.domain.order.application;
 import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.common.annotation.DistributedLock;
 import kr.hhplus.be.server.domain.coupon.application.CouponService;
+import kr.hhplus.be.server.domain.order.domain.event.OrderCreatedEvent;
 import kr.hhplus.be.server.domain.order.domain.model.Order;
 import kr.hhplus.be.server.domain.point.applicatioin.PointCommand;
 import kr.hhplus.be.server.domain.point.applicatioin.PointService;
 import kr.hhplus.be.server.domain.point.domain.model.UserPoint;
 import kr.hhplus.be.server.domain.product.application.ProductService;
 import kr.hhplus.be.server.domain.product.domain.model.Product;
-import kr.hhplus.be.server.domain.ranking.application.RankingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,8 @@ public class OrderFacade {
     private final ProductService productService;
     private final PointService pointService;
     private final CouponService couponService;
-    private final RankingService rankingService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @DistributedLock(
@@ -56,8 +58,8 @@ public class OrderFacade {
         // 7. 주문 저장
         orderService.save(newOrder);
 
-        // 8. 주문 후 랭킹 점수 증가
-        newOrder.getItems().forEach(item -> rankingService.increaseScore(item.getProductId(), item.getQuantity()));
+        // 8. 핵심 로직 커밋 이후 실행될 이벤트 발행
+        eventPublisher.publishEvent(new OrderCreatedEvent(newOrder.getId(), newOrder.getUserId(), newOrder.getItems()));
     }
 }
 
