@@ -286,6 +286,12 @@ public class ProductEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @DistributedLock(
+            prefix = "product",
+            keys = {"#event.items.![productId]"}, // 멀티락
+            waitTime = 5,
+            leaseTime = 2
+    )
     public void handle(OrderPreparedEvent event) {
         try {
             productService.deductStock(event.getOrderId());
