@@ -69,15 +69,15 @@ graph TD
 ## 3. 도메인별 트랜잭션 분리 시 발생 가능한 문제
 
 1. **원자성(Atomicity) 깨짐**
-    - 주문은 생성되었으나 결제/재고 차감 실패 → 데이터 불일치 발생
+   - 주문은 생성되었으나 결제/재고 차감 실패 → 데이터 불일치 발생
 2. **중복 처리(Idempotency) 문제**
-    - 네트워크 지연/장애로 이벤트 중복 발행 시 결제·재고가 이중 처리될 수 있음
+   - 네트워크 지연/장애로 이벤트 중복 발행 시 결제·재고가 이중 처리될 수 있음
 3. **순서 보장 문제**
-    - 이벤트 기반 처리 시 메시지 순서가 보장되지 않으면 **결제 취소 이벤트**가 **결제 성공 이벤트**보다 먼저 도착하는 문제 발생
+   - 이벤트 기반 처리 시 메시지 순서가 보장되지 않으면 **결제 취소 이벤트**가 **결제 성공 이벤트**보다 먼저 도착하는 문제 발생
 4. **데이터 정합성 저하**
-    - 최종적 일관성을 허용하면 특정 시점에서 사용자에게 보이는 데이터가 일치하지 않을 수 있음
+   - 최종적 일관성을 허용하면 특정 시점에서 사용자에게 보이는 데이터가 일치하지 않을 수 있음
 5. **보상 트랜잭션 복잡성**
-    - 이미 성공한 단계를 되돌리는 보상 트랜잭션은 비즈니스 정책에 따라 구현 난이도가 높음
+   - 이미 성공한 단계를 되돌리는 보상 트랜잭션은 비즈니스 정책에 따라 구현 난이도가 높음
 
 <br/>
 
@@ -86,22 +86,22 @@ graph TD
 ## 4. 분산 트랜잭션 설계 원칙
 
 1. **서비스 경계 내 트랜잭션(Local Transaction)만 보장**
-    - 각 서비스는 자기 DB에만 책임
+   - 각 서비스는 자기 DB에만 책임
 2. **최종적 일관성(Eventual Consistency)** 수용
-    - 강한 일관성(Strong Consistency) 대신 도메인 정책에 따라 허용 가능한 지연
+   - 강한 일관성(Strong Consistency) 대신 도메인 정책에 따라 허용 가능한 지연
 3. **SAGA 패턴 적용 (Choreography / Orchestration)**
-    - 이벤트 기반 보상 트랜잭션으로 원자성 보완
+   - 이벤트 기반 보상 트랜잭션으로 원자성 보완
 4. **Idempotency 보장**
-    - 동일 이벤트가 여러 번 처리돼도 결과가 변하지 않도록 설계
-    - 예: `processed_event` 테이블로 중복 이벤트 차단
+   - 동일 이벤트가 여러 번 처리돼도 결과가 변하지 않도록 설계
+   - 예: `processed_event` 테이블로 중복 이벤트 차단
 5. **Outbox Pattern & 메시지 브로커**
-    - 트랜잭션과 이벤트 발행을 원자적으로 묶어 **이벤트 유실 방지**
+   - 트랜잭션과 이벤트 발행을 원자적으로 묶어 **이벤트 유실 방지**
 6. **Retry & Dead Letter Queue**
-    - 실패 이벤트는 재시도
-    - 일정 횟수 이상 실패 시 DLQ로 보내 후속 처리
+   - 실패 이벤트는 재시도
+   - 일정 횟수 이상 실패 시 DLQ로 보내 후속 처리
 7. **Observability (모니터링/추적)**
-    - 분산 환경에서는 로그만으로 문제 추적 어려움
-      → Distributed Tracing (Zipkin, OpenTelemetry), 이벤트 모니터링 대시보드 필요
+   - 분산 환경에서는 로그만으로 문제 추적 어려움
+     → Distributed Tracing (Zipkin, OpenTelemetry), 이벤트 모니터링 대시보드 필요
 
 <br/>
 
@@ -177,43 +177,7 @@ ex) 주문 생성 프로세스
 - 서비스 간 통신은 **ApplicationEvent** 로 처리 (Event-driven Choreography)
 - 실패 발생 시 **보상 트랜잭션 이벤트**를 발행
 
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant OrderService
-    participant CouponService
-    participant PointService
-    participant ProductService
-    participant OrderSagaHandler
-
-    User->>OrderService: 주문 생성 요청
-    OrderService->>OrderService: 주문 저장
-    OrderService->>CouponService: OrderCreatedEvent 발행
-    CouponService->>CouponService: 쿠폰 검증
-    alt 쿠폰 성공
-        CouponService->>PointService: CouponAppliedEvent 발행
-    else 쿠폰 실패
-        CouponService->>OrderSagaHandler: CouponFailedEvent 발행
-    end
-
-    PointService->>PointService: 포인트 차감
-    alt 포인트 성공
-        PointService->>ProductService: PointUsedEvent 발행
-    else 포인트 실패
-        PointService->>OrderSagaHandler: PointUseFailedEvent 발행
-    end
-
-    ProductService->>ProductService: 재고 차감
-    alt 재고 성공
-        ProductService->>OrderSagaHandler: StockDeductedEvent 발행
-    else 재고 실패
-        ProductService->>OrderSagaHandler: StockDeductFailedEvent 발행
-    end
-
-    OrderSagaHandler->>OrderService: 주문 확정 / 취소
-
-```
+---
 
 **ex) 주문 서비스 이벤트 발행**
 
@@ -221,20 +185,95 @@ sequenceDiagram
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final ApplicationEventPublisher eventPublisher;
     private final OrderRepository orderRepository;
+    private final ProductValidationPort productValidationPort;
+    private final CouponValidationPort couponValidationPort;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public Order createOrder(OrderCommand.Create command, List<OrderItem> items) {
-        Order order = new Order(command.userId(), items, OrderStatus.PENDING);
-        orderRepository.save(order);
+    public Order createOrder(OrderCommand.Create command) {
+        // 1. 재고 확인
+        List<Product> products = productValidationPort.validateExistence(command.items());
 
-        // 주문 생성 이벤트 발행
-        eventPublisher.publishEvent(new OrderCreatedEvent(order.getId(), order.getUserId(), order.getPaidAmount(), items));
+        // 2. Order 최소 정보 생성 (PENDING 상태)
+        Order order = this.createOrder(command, products);
+
+        // 3. 쿠폰 유효성 검증 및 할인 금액 계산
+        if (command.couponId() != null) {
+            long discountAmount = couponValidationPort.calculateDiscount(command.couponId(), command.userId());
+            order.applyDiscount(discountAmount);
+            if (discountAmount < 0) throw new ApiException(COUPON_INVALID);
+        }
+
+        // 4. 주문 저장 (PENDING)
+        this.save(order);
+
+        // 5. Saga 시작 이벤트 발행
+        eventPublisher.publishEvent(new OrderPreparedEvent(order.getId(), order.getUserId(), command.items()));
+
         return order;
     }
 }
 ```
+
+- **상품 존재 검증**은 Order 생성 시점 (잘못된 데이터 방지)
+- **비즈니스 검증/차감**은 이벤트 리스너 단계 (Saga의 일부)
+- Order와 Product 도메인 간 강한 의존성을 방지하기 위해 Port-Adapter 패턴을 활용하여 조회 전용 컴포넌트를 두고 도메인 간 결합을 약하게 유지
+
+---
+```mermaid
+sequenceDiagram
+  participant Client
+  participant OrderService
+  participant ProductValidationPort
+  participant CouponValidationPort
+  participant EventBus
+  participant ProductService
+  participant CouponService
+  participant PointService
+  participant SagaCoordinator
+  participant Compensation
+
+  Client->>OrderService: createOrder(command)
+  OrderService->>ProductValidationPort: validateAndSnapshot(items)
+  ProductValidationPort-->>OrderService: snapshots
+  OrderService->>CouponValidationPort: calculateDiscount(couponId, snapshots)
+  CouponValidationPort-->>OrderService: discount
+  OrderService->>OrderService: compute finalAmount;
+  OrderService->>OrderService: save PENDING_PREPARED;
+  OrderService->>EventBus: publish OrderPreparedEvent(orderId, finalAmount)
+  EventBus-->>ProductService: OrderPreparedEvent
+  EventBus-->>CouponService: OrderPreparedEvent
+  EventBus-->>PointService: OrderPreparedEvent
+
+  ProductService->>EventBus: StockDeductedEvent / StockDeductFailedEvent
+  CouponService->>EventBus: CouponConsumedEvent / CouponConsumeFailedEvent
+  PointService->>EventBus: PointUsedEvent / PointUseFailedEvent
+
+  EventBus-->>SagaCoordinator: events (success/fail)
+  alt all success
+    SagaCoordinator->>EventBus: publish OrderCompletedEvent
+    EventBus-->>OrderService: OrderCompletedEvent (order status -> COMPLETED)
+  else any failed
+    SagaCoordinator->>EventBus: publish CompensationRequestedEvent
+    EventBus-->>Compensation: CompensationRequestedEvent
+    Compensation->>ProductService: restoreStock (REQUIRES_NEW)
+    Compensation->>CouponService: rollbackCoupon (REQUIRES_NEW)
+    Compensation->>PointService: rollbackPoints (REQUIRES_NEW)
+    Compensation->>OrderService: update status FAILED
+  end
+
+```
+
+- 이벤트 순차(chain) 방식과 여러 컨슈머가 병렬(Parallel)로 동시에 소비하는 방식을 하이브리드로 사용
+
+```
+검증된 재고 → 쿠폰 검증으로 최종 결제금액 산출
+→ 그 최종금액 기준으로 포인트 차감 / 재고 차감 / 주문 업데이트를 병렬 처리
+```
+
+<br/>
 
 **ex) 재고 이벤트 리스너**
 
@@ -247,7 +286,7 @@ public class ProductEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handle(OrderCreatedEvent event) {
+    public void handle(OrderPreparedEvent event) {
         try {
             productService.deductStock(event.getOrderId());
             eventPublisher.publishEvent(new StockDeductedEvent(event.getOrderId()));
@@ -263,6 +302,8 @@ public class ProductEventHandler {
 }
 
 ```
+
+---
 
 
 <br/>
