@@ -17,7 +17,7 @@ public class CouponController implements CouponApiDocs {
     private final CouponService couponService;
 
     @PostMapping("/issue")
-    public ResponseEntity<String> issueCoupon(
+    public ResponseEntity<Void> issueCoupon(
             @RequestBody CouponDto.CouponIssueRequest request
     ) {
         boolean success = couponService.issue(request.userId(), request.couponPolicyId());
