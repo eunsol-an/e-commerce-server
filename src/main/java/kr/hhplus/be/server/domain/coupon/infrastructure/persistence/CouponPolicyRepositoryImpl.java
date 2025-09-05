@@ -35,6 +35,11 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepository {
     }
 
     @Override
+    public int tryIncreaseIssuedCount(Long couponPolicyId) {
+        return couponPolicyJpaRepository.increaseIssuedCountIfAvailable(couponPolicyId);
+    }
+
+    @Override
     public void deleteAllInBatch() {
         couponPolicyJpaRepository.deleteAllInBatch();
     }

@@ -3,7 +3,6 @@ package kr.hhplus.be.server.domain.coupon.presentation;
 import kr.hhplus.be.server.docs.CouponApiDocs;
 import kr.hhplus.be.server.domain.coupon.application.CouponService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +19,8 @@ public class CouponController implements CouponApiDocs {
     public ResponseEntity<Void> issueCoupon(
             @RequestBody CouponDto.CouponIssueRequest request
     ) {
-        boolean success = couponService.issue(request.userId(), request.couponPolicyId());
-
-        if (success) {
-            return ResponseEntity.ok("쿠폰 발급 성공! DB 반영은 대기열 처리 후 완료됩니다.");
-        } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("발급 실패: 이미 발급되었거나 재고가 없습니다.");
-        }
+        couponService.tryIssue(request.userId(), request.couponPolicyId());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
