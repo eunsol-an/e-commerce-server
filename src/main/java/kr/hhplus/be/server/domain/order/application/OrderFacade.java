@@ -59,7 +59,7 @@ public class OrderFacade {
         orderService.save(newOrder);
 
         // 8. 핵심 로직 커밋 이후 실행될 이벤트 발행
-        eventPublisher.publishEvent(new OrderCreatedEvent(newOrder.getId(), newOrder.getUserId(), newOrder.getItems()));
+        eventPublisher.publishEvent(OrderCreatedEvent.of(newOrder));
     }
 }
 

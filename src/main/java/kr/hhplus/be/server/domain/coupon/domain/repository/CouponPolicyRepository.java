@@ -8,5 +8,6 @@ public interface CouponPolicyRepository {
     Optional<CouponPolicy> findById(Long couponPolicyId);
     Optional<CouponPolicy> findByIdWithPessimisticLock(Long couponPolicyId);
     CouponPolicy save(CouponPolicy couponPolicy);
+    int tryIncreaseIssuedCount(Long couponPolicyId);
     void deleteAllInBatch();
 }

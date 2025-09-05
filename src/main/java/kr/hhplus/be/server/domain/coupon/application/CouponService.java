@@ -1,13 +1,17 @@
 package kr.hhplus.be.server.domain.coupon.application;
 
+import kr.hhplus.be.server.domain.coupon.domain.event.CouponRequestedEvent;
 import kr.hhplus.be.server.domain.coupon.domain.model.Coupon;
 import kr.hhplus.be.server.domain.coupon.domain.model.CouponPolicy;
+import kr.hhplus.be.server.domain.coupon.domain.model.CouponStatus;
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponMemoryRepository;
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponPolicyRepository;
 import kr.hhplus.be.server.domain.coupon.domain.repository.CouponRepository;
 import kr.hhplus.be.server.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static kr.hhplus.be.server.exception.ErrorCode.*;
 
@@ -17,6 +21,8 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
     private final CouponMemoryRepository couponMemoryRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     public Coupon getCouponByUser(Long couponId, Long userId) {
         return couponRepository.findByIdAndUserIdAndStatusIssued(couponId, userId)
@@ -65,6 +71,26 @@ public class CouponService {
         couponMemoryRepository.enqueue(couponPolicyId, userId);
 
         // 5. DB 반영은 스케줄러/비동기로 처리
+        return true;
+    }
+
+    @Transactional
+    public void tryIssue(Long userId, Long couponPolicyId) {
+        eventPublisher.publishEvent(CouponRequestedEvent.of(couponPolicyId, userId));
+    }
+
+    @Transactional
+    public boolean grantCouponIfNotExists(Long userId, Long couponPolicyId) {
+        // 1. 이미 해당 유저가 이 쿠폰 정책으로 쿠폰을 발급받았는지 확인 (중복 발급 방지)
+        boolean alreadyUsed = couponRepository.existsByUserIdAndCouponPolicyId(userId, couponPolicyId);
+        if (alreadyUsed) return false; // 중복 발급
+
+        // 2. 조건부 업데이트로 쿠폰 발급 수량 1 증가 시도
+        int updatedRows = couponPolicyRepository.tryIncreaseIssuedCount(couponPolicyId);
+        if (updatedRows == 0) return false; // 쿠폰 소진
+
+        // 3. 쿠폰 생성 및 저장
+        couponRepository.save(Coupon.create(userId, couponPolicyId, CouponStatus.ISSUED));
         return true;
     }
 
